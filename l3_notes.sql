@@ -91,6 +91,11 @@ from
 where e1.person='Bob'; 
 
 -- string operations
+-- like operator
+-- SELECT column1, column2, ...
+-- FROM table_name
+-- WHERE columnN LIKE pattern;
+
 -- percent ( % ). The % character matches any substring.
 -- underscore ( _ ). The _ character matches any character.
 select * from instructor;
