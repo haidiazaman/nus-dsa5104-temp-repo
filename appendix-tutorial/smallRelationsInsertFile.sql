@@ -147,3 +147,59 @@ insert into prereq values ('CS-315', 'CS-101');
 insert into prereq values ('CS-319', 'CS-101');
 insert into prereq values ('CS-347', 'CS-101');
 insert into prereq values ('EE-181', 'PHY-101');
+
+-- LECTURE 5 PG 38 ADDITION
+insert into student_grades values ('00128', 'Zhang', 'History', '3.5');
+insert into student_grades values ('12345', 'Shankar', 'History', '3.6');
+insert into student_grades values ('19991', 'Brandt', 'History', NULL);
+insert into student_grades values ('23121', 'Chavez', 'History', '3.1');
+insert into student_grades values ('44553', 'Peltier', 'Music', '3.5');
+insert into student_grades values ('45678', 'Levy', 'Music', '2.5');
+insert into student_grades values ('54321', 'Williams', 'Music', '4.0');
+insert into student_grades values ('55739', 'Sanchez', 'Music', '3.5');
+insert into student_grades values ('70557', 'Snow', 'Physics', '2.0');
+insert into student_grades values ('76543', 'Brown', 'Physics', '3.1');
+insert into student_grades values ('76653', 'Aoi', 'Physics', '3.1');
+insert into student_grades values ('98765', 'Bourikas', 'Physics', '2.4');
+insert into student_grades values ('98988', 'Tanaka', 'Physics', '3.1');
+
+-- LECTURE 5 PG 52 ADDITION
+insert into sales values('dress', 'dark', 'small', 2);
+insert into sales values('dress', 'dark', 'medium', 6);
+insert into sales values('dress', 'dark', 'large', 12);
+insert into sales values('dress', 'pastel', 'small', 4);
+insert into sales values('dress', 'pastel', 'medium', 3);
+insert into sales values('dress', 'pastel', 'large', 3);
+insert into sales values('dress', 'white', 'small', 2);
+insert into sales values('dress', 'white', 'medium', 3);
+insert into sales values('dress', 'white', 'large', 0);
+
+insert into sales values('pants', 'dark', 'small', 14);
+insert into sales values('pants', 'dark', 'medium', 6);
+insert into sales values('pants', 'dark', 'large', 0);
+insert into sales values('pants', 'pastel', 'small', 1);
+insert into sales values('pants', 'pastel', 'medium', 0);
+insert into sales values('pants', 'pastel', 'large', 1);
+insert into sales values('pants', 'white', 'small', 3);
+insert into sales values('pants', 'white', 'medium', 0);
+insert into sales values('pants', 'white', 'large', 2);
+
+insert into sales values('shirt', 'dark', 'small', 2);
+insert into sales values('shirt', 'dark', 'medium', 6);
+insert into sales values('shirt', 'dark', 'large', 6);
+insert into sales values('shirt', 'pastel', 'small', 4);
+insert into sales values('shirt', 'pastel', 'medium', 2);
+insert into sales values('shirt', 'pastel', 'large', 1);
+insert into sales values('shirt', 'white', 'small', 17);
+insert into sales values('shirt', 'white', 'medium', 1);
+insert into sales values('shirt', 'white', 'large', 10);
+
+insert into sales values('skirt', 'dark', 'small', 2);
+insert into sales values('skirt', 'dark', 'medium', 5);
+insert into sales values('skirt', 'dark', 'large', 1);
+insert into sales values('skirt', 'pastel', 'small', 11);
+insert into sales values('skirt', 'pastel', 'medium', 9);
+insert into sales values('skirt', 'pastel', 'large', 15);
+insert into sales values('skirt', 'white', 'small', 2);
+insert into sales values('skirt', 'white', 'medium', 5);
+insert into sales values('skirt', 'white', 'large', 3);

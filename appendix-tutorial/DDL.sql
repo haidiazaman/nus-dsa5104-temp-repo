@@ -117,3 +117,21 @@ create table prereq
 	 foreign key (prereq_id) references course (course_id)
 	);
 
+drop table if exists student_grades;
+
+create table student_grades (
+	ID varchar(5),
+    student_name varchar(20),
+	dept_name varchar(20),
+	GPA decimal(3,2),
+    primary key (ID)
+);
+
+drop table if exists sales;
+
+create table sales (
+	item_name char(5),
+	color varchar(6),
+	clothes_size varchar(6),
+	quantity integer
+);
