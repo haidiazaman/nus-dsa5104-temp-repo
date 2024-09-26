@@ -26,6 +26,16 @@ use chicago;
 #####################################################################################
 -- begin Q1 code 
 
+select 
+	community_area_name, 
+    sum(case when elementary_middle_or_high_school='ES' then 1 else 0 end) as ES,
+	sum(case when elementary_middle_or_high_school='MS' then 1 else 0 end) as MS,
+    sum(case when elementary_middle_or_high_school='HS' then 1 else 0 end) as HS
+from chicago_school
+group by community_area_name
+order by community_area_name asc
+limit 7;
+
 -- end Q1 code
 
 
@@ -68,6 +78,25 @@ use chicago;
 #####################################################################################
 -- begin Q2 code
 
+select 
+	location_description,
+    sum(case primary_description when 'THEFT' then number_of_crimes end) as THEFT,
+    sum(case primary_description when 'BATTERY' then number_of_crimes end) as BATTERY,
+    sum(case primary_description when 'NARCOTICS' then number_of_crimes end) as NARCOTICS,
+    sum(case primary_description when 'CRIMINAL DAMAGE' then number_of_crimes end) as "CRIMINAL DAMAGE",
+    sum(case primary_description when 'BURGLARY' then number_of_crimes end) as BURGLARY
+from 
+(
+	select location_description, primary_description, count(*) as number_of_crimes
+	from chicago_crime
+	where location_description in ('STREET', 'RESIDENCE', 'APARTMENT', 'SIDEWALK', 'RESTAURANT', 'GROCERY FOOD STORE', 'GAS STATION')
+		and primary_description in ('THEFT', 'BATTERY', 'NARCOTICS', 'CRIMINAL DAMAGE', 'BURGLARY')
+	group by location_description, primary_description
+	order by number_of_crimes desc
+) temp
+group by location_description
+order by location_description desc;
+
 -- end Q2 code
 
 
@@ -89,6 +118,18 @@ use chicago;
 #####################################################################################
 -- begin Q3 code 
 
+select a.ward, a.number_of_crimes, b.number_of_schools
+from
+	(select ward, count(*) number_of_crimes
+	from chicago_crime
+	group by ward) a
+	left join
+	(select ward, count(*) number_of_schools
+	from chicago_school
+	group by ward) b
+	on a.ward=b.ward
+order by a.ward is null, a.ward asc;
+
 -- end Q3 code
 
 
@@ -102,6 +143,18 @@ use chicago;
 # Hint: Use tables chicago_crime and chicago_socioeconomic
 #####################################################################################
 -- begin Q4 code 
+
+select primary_description, count(*) number_of_crimes
+from
+(select * 
+from chicago_socioeconomic 
+where community_area_name='Lincoln Square') a
+left join 
+chicago_crime b
+on a.community_area_number=b.community_area_number
+group by primary_description
+order by number_of_crimes desc
+limit 5;
 
 -- end Q4 code
 
@@ -119,6 +172,18 @@ use chicago;
 # Hint: Use tables chicago_crime and chicago_socioeconomic
 #####################################################################################
 -- begin Q5 code
+
+select b.community_area_name, a.number_of_crimes
+from
+(select community_area_number, count(*) number_of_crimes
+from chicago_crime 
+where upper(location_description) like '%SCHOOL%'
+group by community_area_number) a 
+left join 
+chicago_socioeconomic b
+on a.community_area_number=b.community_area_number
+order by number_of_crimes desc
+limit 5;
 
 -- end Q5 code
 
@@ -144,6 +209,28 @@ use chicago;
 #####################################################################################
 -- begin Q6 code 
 
+select 
+	a.community_area_name, 
+    hardship_index, 
+    count(*) number_of_schools, 
+    avg(school_performance) average_school_performance, 
+    avg(safety_score) average_safety_score
+from
+(select community_area_name, hardship_index
+from chicago_socioeconomic
+where hardship_index>=90 or hardship_index<=10) a
+left join
+(select community_area_name, safety_score,
+    case 
+		when cps_performance_policy_level='Level 1' then 1
+        when cps_performance_policy_level='Level 2' then 2
+        when cps_performance_policy_level='Level 3' then 3
+        else null 
+	end school_performance
+from chicago_school) b
+on a.community_area_name=b.community_area_name
+group by community_area_name, hardship_index;
+
 -- end Q6 code
 
 
@@ -165,9 +252,20 @@ use chicago;
 #####################################################################################
 -- begin Q7 code
 
+select teachers_icon, 
+	case 
+		when min(teachers_score)='NDA' then null
+        else min(teachers_score)
+	end as min_score,
+	case 
+		when max(teachers_score)='NDA' then null
+        else max(teachers_score)
+	end as max_score
+from chicago_school 
+group by teachers_icon
+order by min_score is null, min_score asc;
+
 -- end Q7 code
-
-
 
 #####################################################################################
 # In chicago_school table, the icon fields are calculated based on the value in 
@@ -179,7 +277,7 @@ use chicago;
 # Q8: Write a stored procedure called procedure_to_update_teachers_score that takes 
 # two input paramers in_school_id int and in_teachers_score varchar(3). 
 # Inside the stored procedure, use an IF statement to 
-# update both the teachers_score and teachers_icon attributes the 
+# update both the teachers_score and teachers_icon attributes in the 
 # chicago_school table for the school identified by in_school_id. 
 #
 # The teachers_score grows from 1 to 99 when it is not 'NDA'.
@@ -202,8 +300,35 @@ use chicago;
 -- begin Q8 code 
 drop procedure if exists procedure_to_update_teachers_score;
  
--- end Q8 code
+-- function is: use case when 0=NDA, 1-19:very weak,20-39:weak,40-59:average,60-79:strong,>=80:very strong
+-- select distinct teachers_icon from chicago_school; -- find diffrent categories
+-- select teachers_icon from chicago_school where teachers_score=0; -- find the categorisation of scores
+-- select teachers_icon from chicago_school where teachers_score<20 and teachers_score>0; -- find the categorisation of scores
+-- select teachers_icon from chicago_school where teachers_score=81; -- find the categorisation of scores
 
+delimiter //
+create procedure procedure_to_update_teachers_score (in in_school_id int, in_teachers_score varchar(3))
+begin
+	set @in_teachers_score = cast(in_teachers_score as double); -- using int doesnt work for some reason
+    
+    update chicago_school
+    set 
+		teachers_icon = (
+			case 
+				when @in_teachers_score=0 then 'NDA' 
+				when @in_teachers_score>0 and @in_teachers_score<20 then 'Very Weak'
+				when @in_teachers_score>=20 and @in_teachers_score<40 then 'Weak'
+				when @in_teachers_score>=40 and @in_teachers_score<60 then 'Average'
+				when @in_teachers_score>=60 and @in_teachers_score<80 then 'Strong'
+				when @in_teachers_score>=80 then 'Very Strong'
+			end
+		),
+        teachers_score=@in_teachers_score
+    where school_id=in_school_id;
+end // 
+delimiter ;
+
+-- end Q8 code
 
 
 #####################################################################################
