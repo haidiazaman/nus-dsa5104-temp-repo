@@ -128,7 +128,8 @@ from
 	from chicago_school
 	group by ward) b
 	on a.ward=b.ward
-order by a.ward is null, a.ward asc;
+order by a.ward is null, a.ward asc
+limit 7;
 
 -- end Q3 code
 
@@ -229,7 +230,8 @@ left join
 	end school_performance
 from chicago_school) b
 on a.community_area_name=b.community_area_name
-group by community_area_name, hardship_index;
+group by community_area_name, hardship_index
+order by hardship_index desc;
 
 -- end Q6 code
 
@@ -254,18 +256,19 @@ group by community_area_name, hardship_index;
 
 select teachers_icon, 
 	case 
-		when min(teachers_score)='NDA' then null
-        else min(teachers_score)
+		when min(cast(teachers_score as unsigned))='NDA' then null
+        else min(cast(teachers_score as unsigned))
 	end as min_score,
 	case 
-		when max(teachers_score)='NDA' then null
-        else max(teachers_score)
+		when max(cast(teachers_score as unsigned))='NDA' then null
+        else max(cast(teachers_score as unsigned))
 	end as max_score
 from chicago_school 
 group by teachers_icon
 order by min_score is null, min_score asc;
 
 -- end Q7 code
+
 
 #####################################################################################
 # In chicago_school table, the icon fields are calculated based on the value in 
@@ -298,18 +301,13 @@ order by min_score is null, min_score asc;
 # Please keep the "drop procedure if exists procedure_to_update_teachers_score;" in the code area
 #####################################################################################
 -- begin Q8 code 
+
 drop procedure if exists procedure_to_update_teachers_score;
- 
--- function is: use case when 0=NDA, 1-19:very weak,20-39:weak,40-59:average,60-79:strong,>=80:very strong
--- select distinct teachers_icon from chicago_school; -- find diffrent categories
--- select teachers_icon from chicago_school where teachers_score=0; -- find the categorisation of scores
--- select teachers_icon from chicago_school where teachers_score<20 and teachers_score>0; -- find the categorisation of scores
--- select teachers_icon from chicago_school where teachers_score=81; -- find the categorisation of scores
 
 delimiter //
 create procedure procedure_to_update_teachers_score (in in_school_id int, in_teachers_score varchar(3))
 begin
-	set @in_teachers_score = cast(in_teachers_score as double); -- using int doesnt work for some reason
+	set @in_teachers_score = cast(in_teachers_score as unsigned); -- using int doesnt work for some reason
     
     update chicago_school
     set 
@@ -328,11 +326,17 @@ begin
 end // 
 delimiter ;
 
+/*
+select school_id, teachers_score, teachers_icon from chicago_school where school_id = 400018; -- before: teachers_score: NDA, teachers_icon: NDA
+call procedure_to_update_teachers_score(400018,'24');
+select school_id, teachers_score, teachers_icon from chicago_school where school_id = 400018; -- before: teachers_score: 24, teachers_icon: Weak
+*/
+
 -- end Q8 code
 
 
 #####################################################################################
-# Q9: Use trigger to do the same thing as in Q7 whenever someone directly executes 
+# Q9: Use trigger to do the same thing as in Q8 whenever someone directly executes 
 # statement like the following to update but only update the teachers_score
 #    update chicago_school set teachers_score = 62 where school_id = 609676;
 #
@@ -361,7 +365,48 @@ delimiter ;
 # in the code area.
 #####################################################################################
 -- begin Q9 code 
- 
+
+drop trigger if exists trigger_update_chicago_school_teachers_score_only;
+
+delimiter //
+create trigger trigger_update_chicago_school_teachers_score_only before update on chicago_school for each row
+begin
+  if new.teachers_score != old.teachers_score and new.teachers_icon = old.teachers_icon then
+	if new.teachers_score=0 then 
+		set new.teachers_icon = 'NDA';
+	elseif new.teachers_score>0 and new.teachers_score<20 then 
+		set new.teachers_icon = 'Very Weak';
+	elseif new.teachers_score>=20 and new.teachers_score<40 then 
+		set new.teachers_icon = 'Weak';
+	elseif new.teachers_score>=40 and new.teachers_score<60 then 
+		set new.teachers_icon = 'Average';
+	elseif new.teachers_score>=60 and new.teachers_score<80 then 
+		set new.teachers_icon = 'Strong';
+	else     
+		set new.teachers_icon = 'Very Strong';      
+    end if;
+  end if;
+end //
+delimiter ;
+
+
+/*
+delimiter //
+create procedure procedure_to_update_teachers_score_2 (in in_school_id int, in_teachers_score varchar(3))
+begin
+	set @in_teachers_score = cast(in_teachers_score as unsigned); -- using int doesnt work for some reason
+    
+    update chicago_school
+    set 
+        teachers_score=@in_teachers_score
+    where school_id=in_school_id;
+end // 
+delimiter ;
+
+select school_id from chicago_school;
+select school_id, teachers_score, teachers_icon from chicago_school where school_id = 609678;
+call procedure_to_update_teachers_score_2(609678, '86');
+select school_id, teachers_score, teachers_icon from chicago_school where school_id = 609678;
+*/
+
 -- end Q9 code
-
-
