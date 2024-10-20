@@ -193,3 +193,6 @@ src/upernet/data/ADEChallengeData2016
 
 temp.csv
 Project2/chicago_crime.sql
+data
+*.db
+
