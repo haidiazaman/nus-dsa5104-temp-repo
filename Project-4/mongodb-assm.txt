@@ -1,0 +1,163 @@
+# 1.1
+db.tours.find(
+    { "birth year": { $gt: 1980 } },
+    { tripduration: 1, "birth year": 1, gender: 1}
+)
+
+# 1.2
+db.tours.find({
+    $or : [
+        { "start station id": { $gte: 399, $lte: 501} },
+        { "end station id": { $gte: 399, $lte: 501} }
+    ]
+})
+
+## 1.2 - chatgpt - query slightly wrong but idea is there and different
+db.tours.find({
+  $or: [
+    {
+      $and: [
+        { "start station id": { $lte: "end station id" } },
+        { "start station id": { $lte: 501 } },
+        { "end station id": { $gte: 399 } }
+      ]
+    },
+    {
+      $and: [
+        { "start station id": { $gt: "end station id" } },
+        { "end station id": { $lte: 501 } },
+        { "start station id": { $gte: 399 } }
+      ]
+    }
+  ]
+})
+
+# 1.3
+db.tours.createIndex(
+    { tripduration: -1, "birth year": 1 }
+)
+
+# 2.1
+db.sales.find(
+    { "items.quantity": { $gt: 2 }, "items.price": { $gt: 100 } }
+)
+# output is wrong
+# The issue with your query is that MongoDB treats each element in the items array independently. When you use { "items.quantity": { $gt: 2 }, "items.price": { $gt: 100 } } in the query, MongoDB tries to match any items.quantity greater than 2 and any items.price greater than 100 but not necessarily within the same item.
+# To ensure that both quantity and price conditions are met within the same item object, you can use the $elemMatch operator. $elemMatch allows you to specify multiple conditions that must be met in a single element of an array.
+
+db.sales.find({
+    items: { 
+        $elemMatch: { 
+            quantity: { $gt: 2 }, 
+            price: { $gt: 100 } 
+        } 
+    }
+})
+
+db.sales.find(
+    {
+        items: {
+            $and : [
+                { quantity: { $gte: 2 } },
+                { price: { $gt: 100 } }
+            ]
+        }
+    },
+    {
+        "items.$": 1
+    }
+)
+
+
+db.sales.find(
+    {
+        items: { 
+            $elemMatch: { 
+                $and: [
+                    { quantity: { $gt: 2 } },
+                    { price: { $gt: 100 } }
+                ]
+            } 
+        }
+    },
+    {
+        "items.$": 1
+    }
+)
+
+db.sales.find(
+    {
+        items: { 
+            $elemMatch: { 
+                quantity: { $gt: 2 }, 
+                price: { $gt: 100 } 
+            } 
+        }
+    },
+    {
+        "items.$": 1, _id: 0
+    }
+)
+
+# 2.2
+db.sales.find(
+    $and : [
+    {
+        items: { 
+            $elemMatch: { 
+                quantity: { $gt: 2 }, 
+                price: { $gt: 100 } 
+            } 
+        }
+    },
+    { items: { $slice: 1 } }  // Returns only the first element of the items array
+    ]
+)
+
+db.sales.find(
+    {
+        "items.0.quantity": { $gt: 2 },
+        "items.0.price": { $gt: 100 }
+    },
+    {
+        items: { $elemMatch: { quantity: { $exists: true }, price: { $exists: true } } },
+        "items.name": 1,
+        "items.quantity": 1,
+        "items.price": 1
+    }
+)
+
+db.sales.find(
+    {
+        "items.0.quantity": { $gt: 2 },
+        "items.0.price": { $gt: 100 }
+    }
+)
+
+db.sales.find(
+    {
+        "items.0.quantity": { $gt: 2 },
+        "items.0.price": { $gt: 100 }
+    },
+    {
+        items: { $elemMatch: { quantity: { $exists: true }, price: { $exists: true } } }
+    }
+)
+
+db.sales.find(
+    {
+        items: { $elemMatch: { "items.0.quantity": { $gt: 2 }, "items.0.price": { $gt: 100 } } }
+    }
+)
+
+db.sales.find(
+    {
+        "items.0.quantity": { $gt: 2 },
+        "items.0.price": { $gt: 100 }
+    },
+    {
+        "items.name": 1, 
+        "items.quantity": 1,
+        "items.price": 1
+    }
+)
