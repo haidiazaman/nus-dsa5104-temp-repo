@@ -158,6 +158,7 @@ db.sales.find(
     {
         "items.name": 1, 
         "items.quantity": 1,
-        "items.price": 1
+        "items.price": 1,
+        _id: 0
     }
 )
