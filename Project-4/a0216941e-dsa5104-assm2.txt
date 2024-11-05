@@ -1,0 +1,47 @@
+# 1.1
+db.tours.find(
+    { "birth year": { $gt: 1980 } },
+    { tripduration: 1, "birth year": 1, gender: 1}
+)
+
+# 1.2
+db.tours.find({
+    $or : [
+        { "start station id": { $gte: 399, $lte: 501} },
+        { "end station id": { $gte: 399, $lte: 501} }
+    ]
+})
+
+# 1.3
+db.tours.createIndex(
+    { tripduration: -1, "birth year": 1 }
+)
+
+# 2.1
+db.sales.find(
+    {
+        items: { 
+            $elemMatch: { 
+                quantity: { $gt: 2 }, 
+                price: { $gt: 100 } 
+            } 
+        }
+    },
+    {
+        "items.$": 1, _id: 0
+    }
+)
+
+# 2.2
+db.sales.find(
+    {
+        "items.0.quantity": { $gt: 2 },
+        "items.0.price": { $gt: 100 }
+    },
+    {
+        "items.name": 1, 
+        "items.quantity": 1,
+        "items.price": 1,
+        _id: 0
+    }
+)
