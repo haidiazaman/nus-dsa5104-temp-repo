@@ -1,0 +1,186 @@
+[{
+  "_id": {
+    "$oid": "572bb8222b288919b68abf5a"
+  },
+  "tripduration": 379,
+  "start station id": 476,
+  "start station name": "E 31 St & 3 Ave",
+  "end station id": 498,
+  "end station name": "Broadway & W 32 St",
+  "bikeid": 17827,
+  "usertype": "Subscriber",
+  "birth year": 1969,
+  "gender": 1,
+  "start station location": {
+    "type": "Point",
+    "coordinates": [
+      -73.97966069,
+      40.74394314
+    ]
+  },
+  "end station location": {
+    "type": "Point",
+    "coordinates": [
+      -73.98808416,
+      40.74854862
+    ]
+  },
+  "start time": {
+    "$date": {
+      "$numberLong": "1451606445000"
+    }
+  },
+  "stop time": {
+    "$date": {
+      "$numberLong": "1451606824000"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "572bb8222b288919b68abf5b"
+  },
+  "tripduration": 889,
+  "start station id": 268,
+  "start station name": "Howard St & Centre St",
+  "end station id": 3002,
+  "end station name": "South End Ave & Liberty St",
+  "bikeid": 22794,
+  "usertype": "Subscriber",
+  "birth year": 1961,
+  "gender": 2,
+  "start station location": {
+    "type": "Point",
+    "coordinates": [
+      -73.99973337,
+      40.71910537
+    ]
+  },
+  "end station location": {
+    "type": "Point",
+    "coordinates": [
+      -74.015756,
+      40.711512
+    ]
+  },
+  "start time": {
+    "$date": {
+      "$numberLong": "1451606466000"
+    }
+  },
+  "stop time": {
+    "$date": {
+      "$numberLong": "1451607356000"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "572bb8222b288919b68abf5c"
+  },
+  "tripduration": 589,
+  "start station id": 489,
+  "start station name": "10 Ave & W 28 St",
+  "end station id": 284,
+  "end station name": "Greenwich Ave & 8 Ave",
+  "bikeid": 21997,
+  "usertype": "Subscriber",
+  "birth year": 1982,
+  "gender": 2,
+  "start station location": {
+    "type": "Point",
+    "coordinates": [
+      -74.00176802,
+      40.75066386
+    ]
+  },
+  "end station location": {
+    "type": "Point",
+    "coordinates": [
+      -74.0026376103,
+      40.7390169121
+    ]
+  },
+  "start time": {
+    "$date": {
+      "$numberLong": "1451606448000"
+    }
+  },
+  "stop time": {
+    "$date": {
+      "$numberLong": "1451607037000"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "572bb8222b288919b68abf5d"
+  },
+  "tripduration": 923,
+  "start station id": 268,
+  "start station name": "Howard St & Centre St",
+  "end station id": 3002,
+  "end station name": "South End Ave & Liberty St",
+  "bikeid": 22285,
+  "usertype": "Subscriber",
+  "birth year": 1958,
+  "gender": 1,
+  "start station location": {
+    "type": "Point",
+    "coordinates": [
+      -73.99973337,
+      40.71910537
+    ]
+  },
+  "end station location": {
+    "type": "Point",
+    "coordinates": [
+      -74.015756,
+      40.711512
+    ]
+  },
+  "start time": {
+    "$date": {
+      "$numberLong": "1451606441000"
+    }
+  },
+  "stop time": {
+    "$date": {
+      "$numberLong": "1451607364000"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "572bb8222b288919b68abf5e"
+  },
+  "tripduration": 332,
+  "start station id": 3104,
+  "start station name": "Kent Ave & N 7 St",
+  "end station id": 389,
+  "end station name": "Broadway & Berry St",
+  "bikeid": 15788,
+  "usertype": "Subscriber",
+  "birth year": 1984,
+  "gender": 1,
+  "start station location": {
+    "type": "Point",
+    "coordinates": [
+      -73.96150225,
+      40.72057658
+    ]
+  },
+  "end station location": {
+    "type": "Point",
+    "coordinates": [
+      -73.96525063,
+      40.71044554
+    ]
+  },
+  "start time": {
+    "$date": {
+      "$numberLong": "1451606479000"
+    }
+  },
+  "stop time": {
+    "$date": {
+      "$numberLong": "1451606811000"
+    }
+  }
+}]
