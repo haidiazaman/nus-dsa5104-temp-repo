@@ -5,11 +5,33 @@ db.tours.find(
 )
 
 # 1.2
-db.tours.find({
-    $or : [
-        { "start station id": { $gte: 399, $lte: 501} },
-        { "end station id": { $gte: 399, $lte: 501} }
-    ]
+db.tours.find({  
+  $or: [  
+    {  
+      $and: [  
+        { "start station id": { $gte: 399 } },  
+        { "start station id": { $lte: 501 } }  
+      ]  
+    },  
+    {  
+      $and: [  
+        { "end station id": { $gte: 399 } },  
+        { "end station id": { $lte: 501 } }  
+      ]  
+    },  
+    {  
+      $and: [  
+        { "start station id": { $lte: 399 } },  
+        { "end station id": { $gte: 501 } }  
+      ]  
+    },  
+    {  
+      $and: [  
+        { "end station id": { $lte: 399 } },  
+        { "start station id": { $gte: 501 } }  
+      ]  
+    }  
+  ]  
 })
 
 # 1.3
