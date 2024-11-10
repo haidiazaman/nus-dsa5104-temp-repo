@@ -1,7 +1,7 @@
 # 1.1
 db.tours.find(
     { "birth year": { $gt: 1980 } },
-    { tripduration: 1, "birth year": 1, gender: 1}
+    { tripduration: 1, "birth year": 1, gender: 1, _id: 0}
 )
 
 # 1.2
