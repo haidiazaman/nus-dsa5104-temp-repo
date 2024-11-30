@@ -655,3 +655,52 @@ limit 5;
 
 -- WHERE filters rows before grouping (if used with GROUP BY).
 -- If you need to filter based on aggregate functions (like SUM() or COUNT()), you would use the HAVING clause after grouping.
+
+
+{
+	"_id": {
+		"$oid": "738235njknsd"
+	},
+	"tripduration":379,
+	"start station id":476,
+	"end station id":498,
+	"birth year":1969,
+	"gender":1,
+}       
+
+
+drop procedure if exists procedure_to_update_teachers_score;
+delimiter $$
+create procedure procedure_to_update_teachers_score(in in_school_id int, in in_teachers_score varchar(3))
+begin
+	declare new_icon varchar(11);
+	update chicago_school set teachers_score = in_teachers_score where school_id = in_school_id;
+    if in_teachers_score > 0 and in_teachers_score < 20 then
+		set new_icon = 'Very Weak';
+	elseif in_teachers_score < 40 then
+		set new_icon = 'Weak';
+	end if;
+    update chicago_school set teachers_icon = new_icon where school_id = in_school_id;
+end
+$$
+delimiter ; 
+
+
+drop trigger if exists trigger_update_chicago_school_teachers_score_only;
+delimiter $$
+create trigger trigger_update_chicago_school_teachers_score_only
+	before update on chicago_school for each row
+	begin
+		declare new_icon varchar(11);
+		if new.teachers_score != old.teachers_score and new.teachers_icon = old.teachers_icon
+        then
+			if new.teachers_score > 0 and new.teachers_score < 20 then
+				set new_icon = 'Very Weak';
+			elseif new.teachers_score < 40 then
+				set new_icon = 'Weak';
+			end if;
+			set new.teachers_icon = new_icon;
+        end if;
+	end
+$$
+delimiter ; 

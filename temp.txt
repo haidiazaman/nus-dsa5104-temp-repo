@@ -1,0 +1,134 @@
+drop procedure if exists upd_sco;
+delimiter $$
+create procedure upd_sco(in a int, in b varchar(3))
+begin
+	declare n varchar(11);
+	update R set col1 = b where col2 = a;
+    if b > 0 and b < 20 then
+		set n = 'Very Weak';
+	elseif b < 40 then
+		set n = 'Weak';
+	end if;
+    update R set col3 = n where col2 = a;
+end $$ delimiter ; [put $$ delimiter ; in newline]
+
+drop procedure if exists d_p;
+delimiter //
+create procedure d_p(in a varchar(10), out d int)
+begin
+    select count(*) into d from instr 
+    where dept_name = a
+end //
+delimiter ;
+call d_p('Physics',@num_count); select @num_count
+
+drop trigger if exists trig;
+delimiter $$
+create trigger trig
+	before update on R for each row
+	begin
+		declare n varchar(11);
+		if new.col1!=old.col1 and new.col2=old.col2
+        then
+			if new.col1>0 and new.col1<20 then
+				set n = 'Very Weak'; ...
+			end if;
+			set new.col2 = n;
+        end if;
+	end
+$$ delimiter ;   [put delimiter ; in newline]
+
+delimiter $$
+create trigger teach_restriction 
+    before insert on R for each row
+    begin
+        declare col1 int;
+        select count(*) into col1
+        from R where id = new.id 
+        and semester = new.semester;
+        if col1>=2 then --over-limit
+            signal sqlstate '45000'
+            set message_text = 'error';
+        end if;
+    end $$
+delimiter ;
+
+create procedure fib1(in n int, 
+out answer int)
+begin
+    declare i int default 2;
+    declare p,q int default 1;
+    set answer=1;
+    while i<n do
+        set answer=p+q;
+        set p=q;
+        set q=answer;
+        set i=i+1;
+    end while
+end // delimiter ;
+
+repeat 
+    set answer=p+q;
+    set p=q;
+    set q=answer;
+    set i=i+1;
+until i>=n end repeat;
+
+loop1: loop1
+    if i>=n then
+        leave loop1;
+    end if;
+    set answer=p+q;
+    set p=q;
+    set q=answer;
+    set i=i+1;
+end loop loop1;
+
+db.o.aggregate([{$match:{"d":{$gte:..,$lt:}}},{$group:{new_col:{$avg:"$quantity"}}}
+},
+// Stage 2: Group remaining documents by date and calculate results
+{
+$group:
+{
+_id: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
+totalOrderValue: { $sum: { $multiply: [ "$price", "$quantity" ] } },
+averageOrderQuantity: { $avg: "$quantity" }
+}
+},
+// Stage 3: Sort documents by totalOrderValue in descending order
+{
+$sort: { totalOrderValue: -1 }
+}
+] )
+
+{$out: “zips_est_pop_2022”} -write res into 
+db.orders.aggregate([{$match:{"date":{$gte:
+ISODate("2020-01-30" ),$lt:ISODate("2022-01-30")}}},
+{$group:{_id:{$dateToString:{format:
+"%Y-%m-%d",date:"$date"}},totalOrderValue:
+{$sum:{$multiply:["$price","$quantity"]}},
+averageOrderQuantity:{$avg:"$quantity"}}}])
+
+delimiter //
+create procedure p()
+begin
+    declare exit/continue handler
+        for sqlstate '23000'
+        set @x=1 ....
+end ; // delimiter ;
+
+from pyspark import SparkContext
+sc = SparkContext("local","firstapp")
+nums=sc.parallelize([5,1,3,2])
+nums.collect() --retrieves all
+nums.take(2) -- returns first 2 elem
+nums.takeOrdered(4) --returns first 4 ordered
+nums.takeOrdered(4, lambda n:-n) --reverse ord
+nums.count() -- returns count
+nums.reduce(lambda x,y: x+y) --returns 11
+
+rdd=sc.parallelize([("a",1),("b",1),("a",1)])
+sorted(rdd.groupByKey().mapValues(len).collect())
+[('a',2),('b',1])]
+sorted(rdd.groupByKey().mapValues(list).collect())
+[('a',[1,1]),('b',[1])]
